@@ -13,6 +13,7 @@ delimiter ;
 
 
 
+
 /*////////////////////////////////////////////////////////////////////////////////*//*////////////////////////////////////////*/
 delimiter $$
 create trigger trForAddingBuyerCreatedEscrow after insert on zbuyercreated
@@ -22,9 +23,15 @@ update zaccountinginfo
 set 
 DispatchedEscrows=DispatchedEscrows+1, 
 TotalEscrows=TotalEscrows+1, TrustSpent=TrustSpent+new.AmountGHS where UserId=new.BuyerId;
+
+ update zaccountinginfo set  TotalEscrows=TotalEscrows+1,PendingEscrows=PendingEscrows+1 where UserId=new.SellerId;
 end$$
 /*////////////////////////////////////////////////////////////////////////////////*//*////////////////////////////////////////*/
+drop trigger trForAddingBuyerCreatedEscrow
 
+
+
+/*////////////////////////////////////////////////////////////////////////////////*//*////////////////////////////////////////*/
 /*////////////////////////////////////////////////////////////////////////////////*//*////////////////////////////////////////*/
 delimiter $$
 create trigger trForAddingSellerCreatedEscrow after insert on zsellercreated
@@ -34,8 +41,10 @@ if new.BuyerId is not null
   then 
 	update zaccountinginfo
 	set 
-	PendingEscrows=PendingEscrows+1, 
+	DispatchedEscrows=DispatchedEscrows+1, 
 	TotalEscrows=TotalEscrows+1 where UserId=new.SellerId;
+    
+    update zaccountinginfo set  TotalEscrows=TotalEscrows+1,PendingEscrows=PendingEscrows+1 where UserId=new.BuyerId;
 end if;
 end$$
 
