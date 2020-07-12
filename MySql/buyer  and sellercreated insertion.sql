@@ -30,14 +30,16 @@ delimiter $$
 create trigger trForAddingSellerCreatedEscrow after insert on zsellercreated
 for each row
 begin
-if new.BuyerId != null
+if new.BuyerId is not null 
   then 
 	update zaccountinginfo
 	set 
 	PendingEscrows=PendingEscrows+1, 
-	TotalEscrows=TotalEscrows+1 where UserId=new.BuyerId;
+	TotalEscrows=TotalEscrows+1 where UserId=new.SellerId;
 end if;
 end$$
-/*////////////////////////////////////////////////////////////////////////////////*//*////////////////////////////////////////*/
 
+delimiter ;
+/*////////////////////////////////////////////////////////////////////////////////*//*////////////////////////////////////////*/
+drop trigger trForAddingSellerCreatedEscrow
 
